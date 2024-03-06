@@ -3,7 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from config import Config
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder=Config.STATIC_FOLDER, template_folder=Config.TEMPLATES_FOLDER)
 app.config.from_object(Config)
 db = SQLAlchemy(app)
 login_manager = LoginManager(app)
