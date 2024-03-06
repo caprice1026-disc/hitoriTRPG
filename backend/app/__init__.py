@@ -1,10 +1,12 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-import os
+from flask_login import LoginManager
+from config import Config
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = os.getenv('your_secret_key')
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///../../database.db'
+app.config.from_object(Config)
 db = SQLAlchemy(app)
+login_manager = LoginManager(app)
+login_manager.login_view = 'auth.login'
 
-from app import routes
+from app import routes, models, auth
