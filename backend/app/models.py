@@ -1,6 +1,11 @@
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.dialects.postgresql import JSON
 import enum
+from flask_login import UserMixin
+from werkzeug.security import generate_password_hash, check_password_hash
+import jwt
+import datetime
+from . import db, app
 
 db = SQLAlchemy()
 
@@ -9,20 +14,36 @@ class GameStateEnum(enum.Enum):
     GAME_OVER = 'ゲームオーバー'
     GAME_CLEAR = 'ゲームクリア'
 
-class User(db.Model):
+class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(80), unique=True, nullable=False)
-    password_hash = db.Column(db.String(128), nullable=False)
+    username = db.Column(db.String(64), index=True, unique=True)
+    email = db.Column(db.String(120), index=True, unique=True)
+    password_hash = db.Column(db.String(128))
     player_id = db.Column(db.Integer, db.ForeignKey('player.id'), unique=True, nullable=False)
     player = db.relationship('Player', backref='user', uselist=False)
 
     def set_password(self, password):
-        # パスワードハッシュ生成関数のダミーです。実際には実装が必要です。
-        pass
+        self.password_hash = generate_password_hash(password)
 
     def check_password(self, password):
-        # パスワード検証関数のダミーです。実際には実装が必要です。
-        return True
+        return check_password_hash(self.password_hash, password)
+
+    def get_reset_password_token(self, expires_in=600):
+        return jwt.encode(
+            {'reset_password': self.id, 'exp': datetime.datetime.now() + datetime.timedelta(seconds=expires_in)},
+            app.config['SECRET_KEY'], algorithm='HS256')
+
+    @staticmethod
+    def verify_reset_password_token(token):
+        try:
+            id = jwt.decode(token, app.config['SECRET_KEY'], algorithms=['HS256'])['reset_password']
+        except:
+            return
+        return User.query.get(id)
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
 
 class WorldSetting(db.Model):
     id = db.Column(db.Integer, primary_key=True)
