@@ -56,8 +56,8 @@ def reset_password(token):
         if user:
             user.set_password(password)
             db.session.commit()
-            flash('Password has been reset', 'success')
+            flash('パスワードはリセットされました。', 'success')
             return redirect(url_for('auth.login'))
         else:
-            flash('Invalid or expired token', 'danger')
+            flash('セッションに問題があります。', 'danger')
     return render_template('auth/reset_password.html')
