@@ -5,7 +5,7 @@ from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 import jwt
 import datetime
-from . import db, app
+from . import db, app, login_manager
 
 db = SQLAlchemy()
 
@@ -79,6 +79,57 @@ class Player(db.Model):
     "回復薬": "HPを30回復します。",
     "鍵": "宝箱を開けるのに必要なアイテムです。"}
     '''
+    def update_hp(self, amount):
+    # amountはHPの増減量
+        self.status['HP'] += amount
+        # HPが0以下になった場合の処理もここに実装する
+        if self.status['HP'] <= 0:
+            self.status['HP'] = 0
+            self.status['SAN'] = 0
+            self.conditions['死亡'] = '死亡しました。'
+            # ゲームオーバー処理
+            self.game_session.state = GameStateEnum.GAME_OVER
+            self.game_session.progress_log = 'ゲームオーバー'
+            db.session.commit()
+            return 'ゲームオーバー'
+        return 'HPを更新しました。'
+    def update_SAN(self, amount):
+        self.status['SAN'] += amount
+        if self.status['SAN'] <= 0:
+            self.status['SAN'] = 0
+            self.status['HP'] = 0
+            self.conditions['狂気'] = '狂気により死亡しました。'
+            self.game_session.state = GameStateEnum.GAME_OVER
+            self.game_session.progress_log = 'ゲームオーバー'
+            db.session.commit()
+            return 'ゲームオーバー'
+        return 'SANを更新しました。'
+    def add_item_to_inventory(self, item_name, item_description):
+        # item_nameはアイテムの名前、item_descriptionはアイテムの説明
+        self.inventory[item_name] = item_description
+        db.session.commit()
+        return 'アイテムを追加しました。'
+    # アイテム削除の関数。使用の際もここを参照する。
+    def remove_item_from_inventory(self, item_name):
+        # item_nameはアイテムの名前
+        del self.inventory[item_name]
+        db.session.commit()
+        return 'アイテムを削除しました。'
+    def change_status(self, status_name, amount):
+        # status_nameはステータスの名前、amountは増減量
+        self.status[status_name] += amount
+        db.session.commit()
+        return 'ステータスを変更しました。'
+    def add_conditions(self, condition_name, condition_description):
+        # condition_nameは状態異常の名前、condition_descriptionは状態異常の説明
+        self.conditions[condition_name] = condition_description
+        db.session.commit()
+        return '状態異常を追加しました。'
+    def remove_conditions(self, condition_name):
+        # condition_nameは状態異常の名前
+        del self.conditions[condition_name]
+        db.session.commit()
+        return '状態異常を削除しました。'
     world_id = db.Column(db.Integer, db.ForeignKey('world_setting.id'), nullable=True)
     world = db.relationship('WorldSetting', backref='players', uselist=False)
 

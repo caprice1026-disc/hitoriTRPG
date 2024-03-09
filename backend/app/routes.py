@@ -1,7 +1,9 @@
-from flask import send_from_directory
+from flask import send_from_directory, request, jsonify
 from flask_login import login_required, current_user
 import os
 from app import app
+from app.models import GameStateEnum
+from app import db
 
 @app.route('/')
 def index():
@@ -15,6 +17,16 @@ def game():
     # フロントエンドのビルドファイルを返す。上記のindex()と同様の点に留意すること。
     root_dir = os.path.dirname(os.getcwd())
     return send_from_directory(os.path.join(root_dir, 'frontend', 'build'), 'index.html')
+
+@app.route('/game/action', methods=['POST'])
+@login_required
+def game_action():
+    # リクエストからプレイヤーの行動を取得
+    action = request.json.get('action')
+    # ゲームセッションを取得し、進行状況を更新
+    current_user.game_session.update_progress(action)
+    db.session.commit()
+    return jsonify({'status': 'success', 'message': 'Game progress updated.'})
 
 #ルーティングはReactRouterでフロントエンド側のルーティングを行う。
 #そのため、フロントエンド側のビルドファイルを返すように変更
