@@ -31,6 +31,7 @@ def signup():
         db.session.add(user)
         db.session.commit()
         flash('アカウントの作成に成功しました。', 'success')
+
         return redirect(url_for('auth.login'))
     return render_template('auth/signup.html')
 
