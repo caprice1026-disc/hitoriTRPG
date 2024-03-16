@@ -1,11 +1,25 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import login_user, logout_user, login_required, current_user
+from werkzeug.security import generate_password_hash, check_password_hash
 from .models import User
-from . import db
-import jwt
-import datetime
+from . import db, bcrypt
+import re
 
 auth = Blueprint('auth', __name__)
+
+def validate_password(password):
+    """パスワードの複雑性を検証する"""
+    if len(password) < 8:
+        return False
+    if not re.search("[a-z]", password):
+        return False
+    if not re.search("[A-Z]", password):
+        return False
+    if not re.search("[0-9]", password):
+        return False
+    if not re.search("[_@$]", password):
+        return False
+    return True
 
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
@@ -13,7 +27,7 @@ def login():
         username = request.form.get('username')
         password = request.form.get('password')
         user = User.query.filter_by(username=username).first()
-        if user and user.check_password(password):
+        if user and bcrypt.check_password_hash(user.password_hash, password):
             login_user(user)
             return redirect(url_for('main.game'))
         else:
@@ -26,8 +40,13 @@ def signup():
         username = request.form.get('username')
         email = request.form.get('email')
         password = request.form.get('password')
-        user = User(username=username, email=email)
-        user.set_password(password)
+
+        if not validate_password(password):
+            flash('パスワードは8文字以上で、英大文字、英小文字、数字、記号を少なくとも1種類ずつ含む必要があります。', 'danger')
+            return render_template('auth/signup.html')
+
+        hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
+        user = User(username=username, email=email, password_hash=hashed_password)
         db.session.add(user)
         db.session.commit()
         flash('アカウントの作成に成功しました。', 'success')

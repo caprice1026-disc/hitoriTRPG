@@ -24,11 +24,14 @@ def game_action():
     # リクエストからプレイヤーの行動を取得
     action = request.json.get('action')
     # ゲームセッションを取得し、進行状況を更新
-    current_user.game_session.update_progress(action)
-    db.session.commit()
-    return jsonify({'status': 'success', 'message': 'Game progress updated.'})
+    # 注意: current_user.game_session.update_progress(action) の実装が必要
+    if hasattr(current_user, 'game_session') and callable(getattr(current_user.game_session, 'update_progress', None)):
+        current_user.game_session.update_progress(action)
+        db.session.commit()
+        return jsonify({'status': 'success', 'message': 'Game progress updated.'})
+    else:
+        return jsonify({'status': 'error', 'message': 'Game session update method not implemented.'})
 
-#ルーティングはReactRouterでフロントエンド側のルーティングを行う。
-#そのため、フロントエンド側のビルドファイルを返すように変更
-#参考: https://flask.palletsprojects.com/en/2.0.x/patterns/fileuploads/#uploading-files
-
+# ルーティングはReactRouterでフロントエンド側のルーティングを行う。
+# そのため、フロントエンド側のビルドファイルを返すように変更
+# 参考: https://flask.palletsprojects.com/en/2.0.x/patterns/fileuploads/#uploading-files
