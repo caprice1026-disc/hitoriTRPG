@@ -15,7 +15,8 @@ client = OpenAI
     {"role": "user", "content": "Hello!"}
   ]
 '''
-def openai_call():
+# 引数にユーザーの入力を受け取る
+def openai_call(input):
   try:
     #ユーザーの入力をOpenAIに渡す処理
     input = request.json['input'] # フロントエンドからのリクエストを受け取る。現状プレースホルダー
@@ -44,9 +45,18 @@ def openai_call():
   except Exception as e:
     raise e
   
-  # UX向上のため、シナリオの返答とステータスの返答を分ける
-  def reflesh_status():
+  # UX向上のため、シナリオの返答とステータスの返答を分ける。引数は暫定
+def reflesh_status(response):
     try:
+      completion = client.chat.completions.create(
+      model="gpt-4-turbo-preview",
+      response_format={ "type": "json_object" },
+      messages=[
+      {"role": "system", "content": "あなたは優秀なTRPGのGMです。ユーザーからのメッセージをもとに、シナリオの続きを作成してください。"},
+      {"role": "user", "content": input}
+      ]
+    )
+
       #llamaIndexでJSONとしてステータスを出力
       #dbに送信、もしくは直接フロントエンドへ
     except Exception as e:
