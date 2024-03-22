@@ -62,14 +62,14 @@ def reflesh_status(response):
     except Exception as e:
       raise e
       
-''' プレイヤー状態更新用のJSONの例。コンテキストウインドウのことを考えてけずること
+''' プレイヤー状態更新用のJSONの例。コンテキストウインドウのことを考えて削ること。
 {
   "status_change": {
-    "STR_change": 10,
-    "DEX_change": 15,
-    "INT_change": 12,
-    "AGI_change": 14,
-    "LUCK_change": 8,
+    "STR_change": -10,
+    "DEX_change": 5,
+    "INT_change": 2,
+    "AGI_change": 1,
+    "LUCK_change": -8,
     "HP_change": 100,
     "SAN_change": 100
   },
