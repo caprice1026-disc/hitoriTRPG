@@ -62,3 +62,64 @@ def reflesh_status(response):
     except Exception as e:
       raise e
       
+''' プレイヤー状態更新用のJSONの例。コンテキストウインドウのことを考えてけずること
+{
+  "status_change": {
+    "STR_change": 10,
+    "DEX_change": 15,
+    "INT_change": 12,
+    "AGI_change": 14,
+    "LUCK_change": 8,
+    "HP_change": 100,
+    "SAN_change": 100
+  },
+  "conditions_change": {
+    "add": {
+      "poisoned": {
+        "duration": 3,
+        "effect": "HP decreases by 5 every turn"
+      },
+      "buffed": {
+        "attribute": "STR",
+        "increase": 5,
+        "duration": 5
+      }
+    },
+    "remove": {
+      "weakened": {
+        "duration": 0,
+        "effect": "No longer affects the player"
+      }
+    }
+  },
+  "inventory_change": {
+    "add": [
+      {
+        "name": "Mystic Scroll",
+        "quantity": 1,
+        "effect": "Unlocks secret magic when read"
+      },
+      {
+        "name": "Healing Potion",
+        "quantity": 2,
+        "effect": "Restores 50 HP"
+      }
+    ],
+    "remove": [
+      {
+        "name": "Old Sword",
+        "quantity": 1,
+        "reason": "Sold to merchant"
+      }
+    ],
+    "update": [
+      {
+        "name": "Mana Potion",
+        "quantity_change": 3,
+        "new_total": 5,
+        "effect": "Restores 30 MP"
+      }
+    ]
+  }
+}
+'''
