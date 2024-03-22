@@ -4,10 +4,11 @@ from flask_login import LoginManager
 from flask_bcrypt import Bcrypt  # パスワードのハッシュ化に使用
 from config import Config
 from .models import User
+from flask_jwt_extended import JWTManager
 
 app = Flask(__name__, static_folder=Config.STATIC_FOLDER, template_folder=Config.TEMPLATES_FOLDER)
 app.config.from_object(Config)
-
+jwt = JWTManager(app)
 # データベースの初期化
 db = SQLAlchemy(app)
 

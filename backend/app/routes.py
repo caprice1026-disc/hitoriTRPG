@@ -18,6 +18,9 @@ def game():
     root_dir = os.path.dirname(os.getcwd())
     return send_from_directory(os.path.join(root_dir, 'frontend', 'build'), 'index.html')
 
+
+# 下記からAPIのエンドポイントを追加していく予定。ファイルの分離も検討すること。
+
 @app.route('/game/action', methods=['POST'])
 @login_required
 def game_action():

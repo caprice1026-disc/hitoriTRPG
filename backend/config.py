@@ -8,7 +8,8 @@ class Config:
     # SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL')
     SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'app.db')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-
    # フロントエンドのビルドファイルのパス
     STATIC_FOLDER = os.path.join(basedir, '../frontend/build')
     TEMPLATES_FOLDER = os.path.join(basedir, 'app/templates')
+    # JWTの秘密鍵を環境変数から取得するか、デフォルト値を設定
+    JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY')
