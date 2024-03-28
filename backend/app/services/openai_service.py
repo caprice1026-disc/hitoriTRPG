@@ -5,6 +5,7 @@ import json
 import requests
 from flask import request
 import os
+from flask import Response
 
 #ダイスロール時のOpenAI呼び出しとステータス変化時のOpenAI呼び出しを違うものとして実装
 OPENAI_API_KEY =os.environ.get('OPENAI_API_KEY')
@@ -32,18 +33,20 @@ def openai_call(input):
     )
 
     for chunk in completion:
+      streaming_chunks = chunk.choices[0].message.content.text.strip()
+      # ストリーミング出力の各内容をフロントエンドに返す
+      yield streaming_chunks
       # ストリーミング出力の内容をresponseに保存してreflesh_statusに渡す必要がある。
-      response.append(chunk.choices[0].message.content.text.strip())
+      response.append(streaming_chunks)
       
       # ユーザーの入力に対するOpenAIの返答をフロントエンドに返すように変更すること。
-
-
 
     # シナリオが長くなりすぎた際にまとめる処理(アシスタントAPIでも可)
     # OpenAIに、GMとしてシナリオの続きを書かせる
     #内容をreflesh_statusに渡してJSONでパースする処理
   except Exception as e:
     raise e
+  
   
   # UX向上のため、シナリオの返答とステータスの返答を分ける。引数は暫定
 def reflesh_status(response):
