@@ -21,7 +21,7 @@ def game():
 
 # 下記からAPIのエンドポイントを追加していく予定。ファイルの分離も検討すること。
 
-@app.route('/game/action', methods=['POST'])
+@app.route('/api/action', methods=['POST'])
 @login_required
 def game_action():
     # リクエストからプレイヤーの行動を取得
