@@ -2,6 +2,7 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_bcrypt import Bcrypt  # パスワードのハッシュ化に使用
+from flask_cors import CORS
 from config import Config
 from .models import User
 from flask_jwt_extended import JWTManager
@@ -11,6 +12,7 @@ app.config.from_object(Config)
 jwt = JWTManager(app)
 # データベースの初期化
 db = SQLAlchemy(app)
+CORS(app)
 
 # ログイン管理の初期化
 login_manager = LoginManager(app)

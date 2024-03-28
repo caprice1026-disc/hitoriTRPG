@@ -4,6 +4,7 @@ import os
 from app import app
 from app.models import GameStateEnum
 from app import db
+from flask_jwt_extended import get_jwt_identity, jwt_required
 
 @app.route('/')
 def index():
@@ -12,7 +13,8 @@ def index():
     return send_from_directory(os.path.join(root_dir, 'frontend', 'build'), 'index.html')
 
 @app.route('/game')
-@login_required
+# 認証方法の変更による変更
+@jwt_required()
 def game():
     # フロントエンドのビルドファイルを返す。上記のindex()と同様の点に留意すること。
     root_dir = os.path.dirname(os.getcwd())
@@ -22,7 +24,8 @@ def game():
 # 下記からAPIのエンドポイントを追加していく予定。ファイルの分離も検討すること。
 
 @app.route('/game/action', methods=['POST'])
-@login_required
+# 認証方法の変更による変更
+@jwt_required()
 def game_action():
     # リクエストからプレイヤーの行動を取得
     action = request.json.get('action')
