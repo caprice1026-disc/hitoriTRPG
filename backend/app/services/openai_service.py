@@ -36,7 +36,7 @@ def openai_call(input):
       response.append(chunk.choices[0].message.content.text.strip())
       
       # ユーザーの入力に対するOpenAIの返答をフロントエンドに返すように変更すること。
-      print(chunk.choices[0].delta)
+
 
 
     # シナリオが長くなりすぎた際にまとめる処理(アシスタントAPIでも可)
