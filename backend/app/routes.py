@@ -5,38 +5,27 @@ from app import app
 from app.models import GameStateEnum
 from app import db
 from flask_jwt_extended import get_jwt_identity, jwt_required
+from auth import auth
+from app.game_routes import game_bp
+from flask import send_from_directory
+import os
+from app import app
 
-@app.route('/')
-def index():
-    # フロントエンドのビルドファイルを返す。npm run buildを行う前後でパスが変わるため、os.path.joinを使ってパスを結合
-    root_dir = os.path.dirname(os.getcwd())
-    return send_from_directory(os.path.join(root_dir, 'frontend', 'build'), 'index.html')
+# Blueprintの登録
 
-@app.route('/game')
-# 認証方法の変更による変更
-@jwt_required()
-def game():
-    # フロントエンドのビルドファイルを返す。上記のindex()と同様の点に留意すること。
-    root_dir = os.path.dirname(os.getcwd())
-    return send_from_directory(os.path.join(root_dir, 'frontend', 'build'), 'index.html')
+app.register_blueprint(game_bp)
+app.register_blueprint(auth) 
 
-
-# 下記からAPIのエンドポイントを追加していく予定。ファイルの分離も検討すること。
-
-@app.route('/game/action', methods=['POST'])
-# 認証方法の変更による変更
-@jwt_required()
-def game_action():
-    # リクエストからプレイヤーの行動を取得
-    action = request.json.get('action')
-    # ゲームセッションを取得し、進行状況を更新
-    # 注意: current_user.game_session.update_progress(action) の実装が必要
-    if hasattr(current_user, 'game_session') and callable(getattr(current_user.game_session, 'update_progress', None)):
-        current_user.game_session.update_progress(action)
-        db.session.commit()
-        return jsonify({'status': 'success', 'message': 'Game progress updated.'})
+# すべてのフロントエンドのルートを捕捉する汎用的なルートハンドラ
+@app.route('/', defaults={'path': ''})
+@app.route('/<path:path>')
+def catch_all(path):
+    if path != "" and os.path.exists(os.path.join(app.static_folder, 'build', path)):
+        # リクエストされたパスが実際に存在する静的ファイルであれば、そのファイルを返す
+        return send_from_directory(os.path.join(app.static_folder, 'build'), path)
     else:
-        return jsonify({'status': 'error', 'message': 'Game session update method not implemented.'})
+        # それ以外の場合は、React Routerが処理するためにindex.htmlを返す
+        return send_from_directory(os.path.join(app.static_folder, 'build'), 'index.html')
 
 # ルーティングはReactRouterでフロントエンド側のルーティングを行う。
 # そのため、フロントエンド側のビルドファイルを返すように変更

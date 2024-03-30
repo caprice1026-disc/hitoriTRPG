@@ -6,7 +6,7 @@ from flask_jwt_extended import create_access_token
 import re
 
 # URLプレフィックスに/apiを追加
-auth = Blueprint('auth', __name__, url_prefix='/api')
+auth = Blueprint('auth', __name__, url_prefix='/api/auth')
 
 def validate_password(password):
     """パスワードの複雑性を検証する。複雑すぎるので修正を検討"""
