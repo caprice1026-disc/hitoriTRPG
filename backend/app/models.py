@@ -64,20 +64,28 @@ class Player(db.Model):
     def change_status(self, status_change):
         for key, value in status_change.items():
             self.status[key] += value
-        # Tx: ここでHPとSANの値が0未満になった場合の処理を追加する
+        # Tx: ここでHPとSANの値が0未満になった場合の処理を追加する。
         if self.status['HP'] <= 0:
             self.game_session.state = GameStateEnum.GAME_OVER
         elif self.status['SAN'] <= 0:
             self.game_session.state = GameStateEnum.GAME_OVER
-        #try exeptでエラー処理を追加
-        db.session.commit()
+        else:
+            try:
+                db.session.commit()
+            except:
+                db.session.rollback()
+                # Tx: ここでエラーメッセージを返す処理を追加する。
     def change_conditions(self, conditions_change):
         for key, value in conditions_change['add'].items():
             self.conditions[key] = value
         for key in conditions_change['remove']:
             self.conditions.pop(key, None)
-        #try exeptでエラー処理を追加   
-        db.session.commit
+        #try exeptでエラー処理を追加  
+            try:
+                db.session.commit()
+            except:
+                db.session.rollback()
+                # Tx: ここでエラーメッセージを返す処理を追加する。 
     def change_inventory(self, inventory_change):
         for item in inventory_change['add']:
             self.inventory[item['name']] = item
@@ -86,7 +94,11 @@ class Player(db.Model):
         for item in inventory_change['update']:
             self.inventory[item['name']] = item
         #try exeptでエラー処理を追加
-        db.session.commit
+            try:
+                db.session.commit()
+            except:
+                db.session.rollback()
+                # Tx: ここでエラーメッセージを返す処理を追加する。
 class GameSession(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     state = db.Column(db.Enum(GameStateEnum), nullable=False)
