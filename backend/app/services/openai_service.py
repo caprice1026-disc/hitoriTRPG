@@ -6,6 +6,41 @@ import requests
 from flask import request
 import os
 from flask import Response
+from typing import Union, List, Dict, Optional
+from pydantic import BaseModel, Field
+
+class Condition(BaseModel):
+    duration: Optional[int] = None
+    effect: str
+
+class ConditionChange(BaseModel):
+    add: Optional[Dict[str, Condition]] = None
+    remove: Optional[Dict[str, Condition]] = None
+
+class InventoryItem(BaseModel):
+    name: str
+    quantity: int
+    effect: Optional[str] = None
+    reason: Optional[str] = None  
+
+class InventoryChange(BaseModel):
+    add: Optional[List[InventoryItem]] = None
+    remove: Optional[List[InventoryItem]] = None
+
+class StatusChange(BaseModel):
+    str: Optional[int] = None
+    dex: Optional[int] = None 
+    int: Optional[int] = None
+    agi: Optional[int] = None
+    luck: Optional[int] = None
+    hp: Optional[int] = None
+    san: Optional[int] = None
+
+class MyCustomSchema(BaseModel):
+    status_change: Optional[StatusChange] = None
+    condition_change: Optional[ConditionChange] = None
+    inventory_change: Optional[InventoryChange] = None
+    
 
 #ダイスロール時のOpenAI呼び出しとステータス変化時のOpenAI呼び出しを違うものとして実装
 OPENAI_API_KEY =os.environ.get('OPENAI_API_KEY')
