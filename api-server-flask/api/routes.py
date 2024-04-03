@@ -7,14 +7,15 @@ from datetime import datetime, timezone, timedelta
 
 from functools import wraps
 
-from flask import request
+from flask import request, Blueprint, Response
 from flask_restx import Api, Resource, fields
-
+from flask_jwt_extended import jwt_required
 import jwt
 
 from .models import db, Users, JWTTokenBlocklist
 from .config import BaseConfig
 import requests
+from openai_service import openai_call, stream_openai_response
 
 rest_api = Api(version="1.0", title="Users API")
 
@@ -240,3 +241,13 @@ class GitHubLogin(Resource):
                     "username": user_json['username'],
                     "token": token,
                 }}, 200
+    
+@rest_api.route('/api/game/action')
+class Action(Resource):
+    @jwt_required()
+    def post(self):
+        # SSEヘッダを設定
+        json = request.get_json()  # リクエストからJSONデータを取得
+        response = Response(stream_openai_response(json), mimetype="text/event-stream")
+        response.headers.set('Cache-Control', 'no-cache')
+        return response
