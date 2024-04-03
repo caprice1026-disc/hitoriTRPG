@@ -244,7 +244,7 @@ class GitHubLogin(Resource):
     
 @rest_api.route('/api/game/action')
 class Action(Resource):
-    @jwt_required()
+    @token_required()
     def post(self):
         # SSEヘッダを設定
         json = request.get_json()  # リクエストからJSONデータを取得
