@@ -22,31 +22,33 @@ def openai_call(input):
     #ユーザーの入力をOpenAIに渡す処理
     input = request.json['input'] # フロントエンドからのリクエストを受け取る。現状プレースホルダー
     # OpenAIに、ユーザーの入力を渡して返答をもらう
-    response = []
     completion = client.chat.completions.create(
-    model="gpt-4-turbo-preview",
-    messages=[
-    {"role": "system", "content": "あなたは優秀なTRPGのGMです。ユーザーからのメッセージをもとに、シナリオの続きを作成してください。"},
-    {"role": "user", "content": input}
-    ],
-    stream=True
-    )
+      model="gpt-4-turbo-preview",
+      messages=[
+      {"role": "system", "content": "あなたは優秀なTRPGのGMです。ユーザーからのメッセージをもとに、シナリオの続きを作成してください。"},
+      {"role": "user", "content": input}
+      ],
+      stream=True
+      )
+    return completion
+  except Exception as e:
+      print(f"Error: {e}")
+      return []
 
-    for chunk in completion:
-      streaming_chunks = chunk.choices[0].message.content.text.strip()
-      # ストリーミング出力の各内容をフロントエンドに返す
-      yield streaming_chunks
-      # ストリーミング出力の内容をresponseに保存してreflesh_statusに渡す必要がある。
-      response.append(streaming_chunks)
+def stream_openai_response(json):
+    openai_response = openai_call(json)
+    
+    def stream_openai_chunks():
+        for chunk in openai_response:
+            yield f"data: {chunk.choices[0].delta.get('content', '')}\n\n"
+
+    return stream_openai_chunks()
       
       # ユーザーの入力に対するOpenAIの返答をフロントエンドに返すように変更すること。
 
     # シナリオが長くなりすぎた際にまとめる処理(アシスタントAPIでも可)
     # OpenAIに、GMとしてシナリオの続きを書かせる
-    #内容をreflesh_statusに渡してJSONでパースする処理
-  except Exception as e:
-    raise e
-  
+    #内容をreflesh_statusに渡してJSONでパースする処理  
   
   # UX向上のため、シナリオの返答とステータスの返答を分ける。引数は暫定
 def reflesh_status(response):
