@@ -30,12 +30,14 @@ class InventoryChange(BaseModel):
 class StatusChange(BaseModel):
     str: Optional[int] = None
     dex: Optional[int] = None 
+    # ここを修正
+    '''
     int: Optional[int] = None
     agi: Optional[int] = None
     luck: Optional[int] = None
     hp: Optional[int] = None
     san: Optional[int] = None
-
+    '''
 class MyCustomSchema(BaseModel):
     status_change: Optional[StatusChange] = None
     condition_change: Optional[ConditionChange] = None
