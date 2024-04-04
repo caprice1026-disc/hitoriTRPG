@@ -244,8 +244,9 @@ class GitHubLogin(Resource):
     
 @rest_api.route('/api/game/action')
 class Action(Resource):
-    @jwt_required()
-    def post(self):
+    @token_required
+    # この部分の引数を変更する必要あり
+    def post(self, current_user):
         # SSEヘッダを設定
         json = request.get_json()  # リクエストからJSONデータを取得
         response = Response(stream_openai_response(json), mimetype="text/event-stream")
