@@ -18,10 +18,21 @@ function WorldSettingsForm() {
     setChaos(newValue);
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    // ここでフォームのデータを送信する処理を実装
-    console.log({ world, stage, chaos });
+    try {
+      const response = await fetch('/api/worldsettings', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ world, stage, chaos })
+      });
+      const data = await response.json();
+      console.log('送信結果:', data);
+    } catch (error) {
+      console.error('送信エラー:', error);
+    }
   };
 
   return (
