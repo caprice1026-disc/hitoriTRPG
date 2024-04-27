@@ -9,7 +9,7 @@ from services.openai_service import stream_openai_response
 game_bp = Blueprint('game', __name__, url_prefix='/api/game')
 
 @game_bp.route('/action', methods=['POST'])
-@jwt_required()
+# @jwt_required()
 def stream_game_action(json):
     # SSEヘッダを設定
     response = Response(stream_openai_response(json), mimetype="text/event-stream")
@@ -17,3 +17,9 @@ def stream_game_action(json):
     return response
 
 # 他のゲーム関連のエンドポイントもこのファイルに追加
+
+@game_bp.route('/charactersetting', methods = ['post'])
+# @jwt_required
+def charactersetting(json):
+  
+  
