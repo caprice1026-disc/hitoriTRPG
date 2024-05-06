@@ -1,15 +1,23 @@
 from openai import OpenAI
-# langchainだとJSONパースが微妙なことがおおい。
-from llama_index import llamaindex
 import json
 import requests
 from flask import request
 import os
 from flask import Response
 
-#ダイスロール時のOpenAI呼び出しとステータス変化時のOpenAI呼び出しを違うものとして実装
 OPENAI_API_KEY =os.environ.get('OPENAI_API_KEY')
 client = OpenAI
+
+def create_thread():
+   empty_thread = client.beta.threads.create()
+   return empty_thread["id"]
+
+
+
+# 以下は修正して後で使う
+
+#ダイスロール時のOpenAI呼び出しとステータス変化時のOpenAI呼び出しを違うものとして実装
+
 # プロンプトはあとでまとめる
 '''prompt = [
     {"role": "system", "content": "You are a helpful assistant."},

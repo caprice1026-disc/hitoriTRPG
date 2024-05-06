@@ -6,6 +6,7 @@ from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 from .config import Config
 from .models import User
+from openai_service import create_thread
 
 db = SQLAlchemy()
 bcrypt = Bcrypt()
@@ -19,6 +20,8 @@ def create_app():
     bcrypt.init_app(app)
     jwt.init_app(app)
     CORS(app)
+    create_thread()
+
 
     login_manager = LoginManager(app)
     login_manager.login_view = 'auth.login'
