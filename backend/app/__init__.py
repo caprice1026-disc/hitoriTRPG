@@ -1,29 +1,33 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
-from flask_bcrypt import Bcrypt  # パスワードのハッシュ化に使用
+from flask_bcrypt import Bcrypt
 from flask_cors import CORS
-from config import Config
-from .models import User
 from flask_jwt_extended import JWTManager
+from .config import Config
+from .models import User
 
-app = Flask(__name__, static_folder=Config.STATIC_FOLDER, template_folder=Config.TEMPLATES_FOLDER)
-app.config.from_object(Config)
-jwt = JWTManager(app)
-# データベースの初期化
-db = SQLAlchemy(app)
-CORS(app)
+db = SQLAlchemy()
+bcrypt = Bcrypt()
+jwt = JWTManager()
 
-# ログイン管理の初期化
-login_manager = LoginManager(app)
-login_manager.login_view = 'auth.login'
+def create_app():
+    app = Flask(__name__, static_folder=Config.STATIC_FOLDER, template_folder=Config.TEMPLATES_FOLDER)
+    app.config.from_object(Config)
+    
+    db.init_app(app)
+    bcrypt.init_app(app)
+    jwt.init_app(app)
+    CORS(app)
 
-# パスワードのハッシュ化に使用するBcryptの初期化
-bcrypt = Bcrypt(app)
+    login_manager = LoginManager(app)
+    login_manager.login_view = 'auth.login'
 
-@login_manager.user_loader
-def load_user(user_id):
-    return User.query.get(int(user_id))
+    @login_manager.user_loader
+    def load_user(user_id):
+        return User.query.get(int(user_id))
 
-# モジュールのインポートは、循環参照を避けるために最後に行う
-from app import routes, models, auth, errors
+    # モジュールのインポートは、循環参照を避けるためにここで行う
+    from . import routes, models, auth, errors
+
+    return app

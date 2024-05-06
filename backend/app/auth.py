@@ -1,3 +1,4 @@
+'''
 from flask import Blueprint, render_template, redirect, url_for, flash, request, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
 from .models import User
@@ -83,3 +84,4 @@ def reset_password(token):
             return jsonify({"message": "パスワードのリセットに成功しました。"}), 200
         else:
             return jsonify({"error": "トークンが無効です。"}), 400
+'''
