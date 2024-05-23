@@ -57,3 +57,6 @@ def delete_player(player_id):
     except SQLAlchemyError as e:
         db.session.rollback()
         raise Exception(f"Deleting player failed: {e}")
+    
+    """プレイヤーのデータをデータベースから削除する"""
+    """ワールドの各種サービス"""

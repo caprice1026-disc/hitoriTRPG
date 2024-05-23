@@ -69,7 +69,10 @@ class Player(db.Model):
             db.session.rollback()
             raise Exception(f"Failed to update inventory: {str(e)}")
 
-
+'''ワールドのクラスを定義する'''
+class World(db.model):
+    id = db.Column(db.Integer, primary_key=True)
+    
 
 # データベース初期化のための関数や、プレイヤーのHPとSANを更新するためのロジックは、
 # このファイル外で定義する必要がある。それらはアプリケーションのビジネスロジックの一部として、
