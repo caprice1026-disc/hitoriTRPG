@@ -1,4 +1,4 @@
-from models import db, Player, PlayerStatus, PlayerCondition, PlayerInventory
+from models import db, Player, PlayerStatus, PlayerCondition, PlayerInventory, World
 from sqlalchemy.exc import SQLAlchemyError
 
 def create_player(name, job):
@@ -58,5 +58,17 @@ def delete_player(player_id):
         db.session.rollback()
         raise Exception(f"Deleting player failed: {e}")
     
+def create_world(name, description):
+    try:
+        new_world = World(name=name, description=description)
+        db.session.add(new_world)
+        db.session.commit()
+        return new_world
+    except SQLAlchemyError as e:
+        db.session.rollback()
+        raise Exception(f"Failed to create world: {str(e)}")
+
+    
     """プレイヤーのデータをデータベースから削除する"""
     """ワールドの各種サービス"""
+
