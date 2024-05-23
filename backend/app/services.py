@@ -59,6 +59,7 @@ def delete_player(player_id):
         raise Exception(f"Deleting player failed: {e}")
     
 def create_world(name, description):
+    """世界観を作成する（要修正）"""
     try:
         new_world = World(name=name, description=description)
         db.session.add(new_world)
