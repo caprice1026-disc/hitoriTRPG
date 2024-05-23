@@ -70,6 +70,7 @@ class Player(db.Model):
             raise Exception(f"Failed to update inventory: {str(e)}")
 
 
+
 # データベース初期化のための関数や、プレイヤーのHPとSANを更新するためのロジックは、
 # このファイル外で定義する必要がある。それらはアプリケーションのビジネスロジックの一部として、
 # モデルのインスタンスが作成または更新される際に適切に呼び出す。
