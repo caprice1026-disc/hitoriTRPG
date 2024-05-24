@@ -5,8 +5,11 @@ db = SQLAlchemy()
 
 class World(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False)
+    #下記をnameにしてるけども分かりづらいから修正した方がいいかもしれない。
+    name = db.Column(db.String(100), nullable=False) 
     description = db.Column(db.Text, nullable=True)
+    setting = db.Column(db.String(100), nullable=False)  # 舞台
+    chaos_level = db.Column(db.Integer, nullable=False)  # カオス度
     players = db.relationship('Player', back_populates='world', lazy='dynamic')
 
 class Player(db.Model):
