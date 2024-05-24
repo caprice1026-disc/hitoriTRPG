@@ -57,11 +57,11 @@ def delete_player(player_id):
     except SQLAlchemyError as e:
         db.session.rollback()
         raise Exception(f"Deleting player failed: {e}")
-    
-def create_world(name, description):
-    """世界観を作成する（要修正）"""
+
+def create_world(name, description, setting, chaos_level):
+    """世界観を作成する"""
     try:
-        new_world = World(name=name, description=description)
+        new_world = World(name=name, description=description, setting=setting, chaos_level=chaos_level)
         db.session.add(new_world)
         db.session.commit()
         return new_world
@@ -69,7 +69,6 @@ def create_world(name, description):
         db.session.rollback()
         raise Exception(f"Failed to create world: {str(e)}")
 
-    
     """プレイヤーのデータをデータベースから削除する"""
     """ワールドの各種サービス"""
 
