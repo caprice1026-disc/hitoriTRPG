@@ -127,6 +127,92 @@ def api_update_session_log(session_id):
     else:
         return jsonify({"message": "Session not found"}), 404
     
+@app.route('/api/session/<int:session_id>', methods=['DELETE'])
+def api_delete_session(session_id):
+    """ゲームセッションを削除するAPIエンドポイント"""
+    session = GameSession.query.get(session_id)
+    if session:
+        db.session.delete(session)
+        try:
+            db.session.commit()
+            return jsonify({"message": "Session deleted"}), 200
+        except SQLAlchemyError as e:
+            db.session.rollback()
+            return jsonify({"message": str(e)}), 500
+    else:
+        return jsonify({"message": "Session not found"}), 404
+    
+@app.route('/api/session/<int:session_id>/state', methods=['PUT'])
+def api_update_session_state(session_id):
+    """ゲームセッションの状態を更新するAPIエンドポイント"""
+    data = request.json
+    state = data.get('state')
+    if state is None:
+        return jsonify({"message": "State is required"}), 400
+
+    session = GameSession.query.get(session_id)
+    if session:
+        session.state = state
+        try:
+            db.session.commit()
+            return jsonify({"message": "Session state updated"}), 200
+        except SQLAlchemyError as e:
+            db.session.rollback()
+            return jsonify({"message": str(e)}), 500
+    else:
+        return jsonify({"message": "Session not found"}), 404
+    
+@app.route('/api/session/<int:session_id>/state', methods=['GET'])
+def api_get_session_state(session_id):
+    """ゲームセッションの状態を取得するAPIエンドポイント"""
+    session = GameSession.query.get(session_id)
+    if session:
+        return jsonify({"state": session.state}), 200
+    else:
+        return jsonify({"message": "Session not found"}), 404
+    
+@app.route('/api/session/<int:session_id>/log', methods=['GET'])
+def api_get_session_log(session_id):
+    """ゲームセッションのログを取得するAPIエンドポイント"""
+    session = GameSession.query.get(session_id)
+    if session:
+        return jsonify({"progress_log": session.progress_log}), 200
+    else:
+        return jsonify({"message": "Session not found"}), 404
+    
+@app.route('/api/session/<int:session_id>/player', methods=['GET'])
+def api_get_session_player(session_id):
+    """ゲームセッションに関連付けられたプレイヤーを取得するAPIエンドポイント"""
+    session = GameSession.query.get(session_id)
+    if session:
+        player = Player.query.get(session.player_id)
+        if player:
+            return jsonify({"player_id": player.id, "name": player.name, "job": player.job}), 200
+        else:
+            return jsonify({"message": "Player not found"}), 404
+    else:
+        return jsonify({"message": "Session not found"}), 404
+    
+@app.route('/api/session/<int:session_id>/player', methods=['PUT'])
+def api_update_session_player(session_id):
+    """ゲームセッションに関連付けられたプレイヤーを更新するAPIエンドポイント"""
+    data = request.json
+    player_id = data.get('player_id')
+    if player_id is None:
+        return jsonify({"message": "Player ID is required"}), 400
+
+    session = GameSession.query.get(session_id)
+    if session:
+        session.player_id = player_id
+        try:
+            db.session.commit()
+            return jsonify({"message": "Player updated"}), 200
+        except SQLAlchemyError as e:
+            db.session.rollback()
+            return jsonify({"message": str(e)}), 500
+    else:
+        return jsonify({"message": "Session not found"}), 404
+    
 # SSEの関数の例
 '''
 @game_bp.route('/action', methods=['POST'])

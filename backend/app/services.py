@@ -69,6 +69,30 @@ def create_world(name, description, setting, chaos_level):
         db.session.rollback()
         raise Exception(f"Failed to create world: {str(e)}")
 
+def delete_world():
     """プレイヤーのデータをデータベースから削除する"""
+    try:
+        world = World.query.first()
+        if world:
+            db.session.delete(world)
+            db.session.commit()
+    except SQLAlchemyError as e:
+        db.session.rollback()
+        raise Exception(f"Deleting world failed: {e}")
+
+def get_world():
+    """ワールドの情報を取得する"""
+    world = World.query.first()
+    if world:
+        return {
+            "name": world.name,
+            "description": world.description,
+            "setting": world.setting,
+            "chaos_level": world.chaos_level
+        }
+    else:
+        return None
+    
+    
     """ワールドの各種サービス"""
 
