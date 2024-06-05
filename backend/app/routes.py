@@ -39,7 +39,7 @@ def api_create_player():
         player = create_player(name, job)
         return jsonify({"message": "Player created", "player_id": player.id}), 201
     except Exception as e:
-        return jsonify({"message": str(e)}), 500
+        return jsonify({"message": "内部サーバーエラーが発生しました"}), 500
 
 @app.route('/api/player/<int:player_id>/status', methods=['PUT'])
 def api_update_player_status(player_id):
@@ -158,7 +158,7 @@ def api_update_session_state(session_id):
             return jsonify({"message": "Session state updated"}), 200
         except SQLAlchemyError as e:
             db.session.rollback()
-            return jsonify({"message": str(e)}), 500
+            return jsonify({"message": "内部サーバーエラー"}), 500
     else:
         return jsonify({"message": "Session not found"}), 404
     
@@ -209,7 +209,7 @@ def api_update_session_player(session_id):
             return jsonify({"message": "Player updated"}), 200
         except SQLAlchemyError as e:
             db.session.rollback()
-            return jsonify({"message": str(e)}), 500
+            return jsonify({"message": "内部サーバーエラーが発生しました"}), 500
     else:
         return jsonify({"message": "Session not found"}), 404
     
